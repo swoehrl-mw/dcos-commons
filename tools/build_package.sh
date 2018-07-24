@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e -x
+set -e
 
 user_usage() {
     # This script is generally called by an upstream 'build.sh' which would be invoked directly by users.
