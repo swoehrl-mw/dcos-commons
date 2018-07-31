@@ -11,8 +11,8 @@ network.publish_host:
   - _local_
 cluster.name: {{CLUSTER_NAME}}
 node.name: {{TASK_NAME}}
-path.data: "container-path/data"
-path.logs: "container-path/logs"
+path.data: "{{MESOS_SANDBOX}}/container-path/data"
+path.logs: "{{MESOS_SANDBOX}}/container-path/logs"
 http.port: {{PORT_HTTP}}
 transport.tcp.port: {{PORT_TRANSPORT}}
 bootstrap.memory_lock: false
@@ -41,6 +41,7 @@ node.data: {{DATA_ENABLED}}
 node.ingest: {{INGEST_ENABLED}}
 
 {{#SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+{{#XPACK_ENABLED}}
 # https://www.elastic.co/guide/en/elasticsearch/reference/5.5/security-settings.html#ssl-tls-settings
 xpack.security.enabled: true
 xpack.ssl.key: {{MESOS_SANDBOX}}/node.key
@@ -52,7 +53,32 @@ xpack.security.transport.ssl.enabled: true
 # Client encryption
 xpack.security.http.ssl.enabled: true
 xpack.security.http.ssl.client_authentication: none
+{{/XPACK_ENABLED}}
+{{#SEARCHGUARD_ENABLED}}
+searchguard.ssl.transport.enabled: true
+searchguard.ssl.transport.keystore_filepath: {{MESOS_SANDBOX}}/node.keystore
+searchguard.ssl.transport.keystore_password: notsecure
+searchguard.ssl.transport.truststore_filepath: {{MESOS_SANDBOX}}/node.truststore
+searchguard.ssl.transport.truststore_password: notsecure
+searchguard.ssl.transport.enforce_hostname_verification: false
+searchguard.ssl.transport.resolve_hostname: false
+
+searchguard.nodes_dn:
+  - CN=*
+searchguard.authcz.admin_dn:
+  - "{{SEARCHGUARD_ADMIN_DN}}"
+
+searchguard.ssl.http.enabled: true
+searchguard.ssl.http.keystore_filepath: {{MESOS_SANDBOX}}/server.keystore
+searchguard.ssl.http.keystore_password: notsecure
+searchguard.ssl.http.truststore_filepath: {{MESOS_SANDBOX}}/server.truststore
+searchguard.ssl.http.truststore_password: notsecure
+{{/SEARCHGUARD_ENABLED}}
 {{/SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+
+{{#SEARCHGUARD_ENABLED}}
+searchguard.enterprise_modules_enabled: {{SEARCHGUARD_ENTERPRISE_ENABLED}}
+{{/SEARCHGUARD_ENABLED}}
 
 {{#SCRIPT_ALLOWED_CONTEXTS}}
 script.allowed_contexts: {{SCRIPT_ALLOWED_CONTEXTS}}
@@ -92,7 +118,6 @@ http.cors.allow-credentials: {{HTTP_CORS_ALLOW_CREDENTIALS}}
 http.detailed_errors.enabled: {{HTTP_DETAILED_ERRORS_ENABLED}}
 http.pipelining: {{HTTP_PIPELINING}}
 http.pipelining.max_events: {{HTTP_PIPELINING_MAX_EVENTS}}
-http.content_type.required: {{HTTP_CONTENT_TYPE_REQUIRED}}
 {{#THREAD_POOL_SEARCH_SIZE}}
 thread_pool.search.size: {{THREAD_POOL_SEARCH_SIZE}}
 {{/THREAD_POOL_SEARCH_SIZE}}

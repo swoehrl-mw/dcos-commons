@@ -349,13 +349,36 @@
         "count"
       ]
     },
+    "sgadmin_nodes": {
+      "description": "Elasticsearch sgadmin node configuration properties",
+      "type": "object",
+      "properties": {
+        "count": {
+          "description": "Number of sgadmin nodes to run",
+          "type": "integer",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
     "elasticsearch": {
       "description": "Elasticsearch service configuration properties",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "xpack_enabled": {
-          "description": "Whether or not to enable the commercial X-Pack plugin from Elastic",
+          "description": "Whether or not to enable the commercial X-Pack plugin from Elastic, can not be enabled at the same time as searchguard",
+          "type": "boolean",
+          "default": false
+        },
+        "searchguard_enabled": {
+          "description": "Whether or not to enable the searchguard plugin from floragunn, can not be enabled at the same time as X-Pack",
+          "type": "boolean",
+          "default": false
+        },
+        "searchguard_enterprise_enabled": {
+          "description": "Whether or not to enable the enterprise features of the searchguard plugin from floragunn, requires an enterprise edition license",
           "type": "boolean",
           "default": false
         },
@@ -374,14 +397,19 @@
           "default": ""
         },
         "health_user": {
-          "description": "Elastic username to use for X-Pack authentication, if enabled",
+          "description": "Elastic username to use for X-Pack/searchguard authentication, if enabled",
           "type": "string",
           "default": "elastic"
         },
         "health_user_password": {
-          "description": "Password to use with health_user for X-Pack authentication, if enabled. Note that you are not setting the password here. You are telling the framework the credentials to use when sending in health check requests.",
+          "description": "Password to use with health_user for X-Pack/searchguard authentication, if enabled. Note that you are not setting the password here. You are telling the framework the credentials to use when sending in health check requests.",
           "type": "string",
           "default": "changeme"
+        },
+        "searchguard_admin_dn": {
+          "type": "string",
+          "description": "Certificate DN for admin users. Needed for searchguard",
+          "default": ""
         },
         "gateway_recover_after_time": {
           "description": "If the expected number of nodes is not achieved, the recovery process waits for the configured amount of time before trying to recover regardless. Defaults to 5m if one of the expected_nodes settings is configured.",
@@ -517,11 +545,6 @@
           "description": "The maximum number of events to be queued up in memory before a HTTP connection is closed, defaults to 10000.",
           "type": "integer",
           "default": 10000
-        },
-        "http_content_type_required": {
-          "description": "Enables or disables strict checking and usage of the Content-Type header for all requests with content, defaults to false.",
-          "type": "boolean",
-          "default": false
         },
         "thread_pool_search_size": {
           "description": "For count/search/suggest operations. Thread pool type is fixed with a size of int((# of available_processors * 3) / 2) + 1. Empty means do not explicity set.",

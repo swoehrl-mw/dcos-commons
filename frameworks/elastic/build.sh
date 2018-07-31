@@ -27,11 +27,11 @@ $REPO_ROOT_DIR/tools/build_package.sh \
     $@
 
 # Chain to build kibana as well
-if [ "$UNIVERSE_URL_PATH" ]; then
-    # append kibana stub universe URL to UNIVERSE_URL_PATH file (used in CI):
-    KIBANA_URL_PATH=${UNIVERSE_URL_PATH}.kibana
-    UNIVERSE_URL_PATH=$KIBANA_URL_PATH $FRAMEWORK_DIR/build-kibana.sh $1 $2
-    cat $KIBANA_URL_PATH >> $UNIVERSE_URL_PATH
-else
-    $FRAMEWORK_DIR/build-kibana.sh $1 $2
-fi
+#if [ "$UNIVERSE_URL_PATH" ]; then
+#    # append kibana stub universe URL to UNIVERSE_URL_PATH file (used in CI):
+#    KIBANA_URL_PATH=${UNIVERSE_URL_PATH}.kibana
+#    UNIVERSE_URL_PATH=$KIBANA_URL_PATH $FRAMEWORK_DIR/build-kibana.sh $1 $2
+#    cat $KIBANA_URL_PATH >> $UNIVERSE_URL_PATH
+#else
+#    $FRAMEWORK_DIR/build-kibana.sh $1 $2
+#fi

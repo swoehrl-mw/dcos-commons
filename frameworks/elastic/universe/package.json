@@ -1,7 +1,7 @@
 {
   "packagingVersion": "4.0",
-  "upgradesFrom": ["{{upgrades-from}}"],
-  "downgradesTo": ["{{downgrades-to}}"],
+  "upgradesFrom": ["{{upgrades-from}}", "2.4.0-6.3.1-mw1"],
+  "downgradesTo": ["{{downgrades-to}}", "2.4.0-6.3.1-mw1"],
   "minDcosReleaseVersion": "1.10",
   "name": "elastic",
   "version": "{{package-version}}",

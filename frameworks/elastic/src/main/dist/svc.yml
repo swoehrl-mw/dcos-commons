@@ -15,9 +15,9 @@ pods:
       - {{ELASTICSEARCH_JAVA_URI}}
       - {{SCHEDULER_URI}}
       - {{ELASTICSEARCH_URI}}
-      {{#TASKCFG_ALL_XPACK_ENABLED}}
-      - {{XPACK_URI}}
-      {{/TASKCFG_ALL_XPACK_ENABLED}}
+      {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+      - {{SEARCHGUARD_URI}}
+      {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
       - {{DIAGNOSTICS_URI}}
       - {{STATSD_URI}}
     rlimits:
@@ -67,20 +67,29 @@ pods:
           INGEST_ENABLED: false
           ES_JAVA_OPTS: "-Xms{{MASTER_NODE_HEAP_MB}}M -Xmx{{MASTER_NODE_HEAP_MB}}M"
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
+          SEARCHGUARD_VERSION: {{SEARCHGUARD_VERSION}}
           ELASTIC_STATSD_VERSION: {{ELASTIC_STATSD_VERSION}}
         configs:
           elasticsearch:
             template: elasticsearch.yml
             dest: elasticsearch-{{ELASTIC_VERSION}}/config/elasticsearch.yml
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HEALTH_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: "curl -k -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HEALTH_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP/_cat/health | grep green"
           interval: 5
           delay: 0
           timeout: 10
         {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
         transport-encryption:
+          {{#TASKCFG_ALL_XPACK_ENABLED}}
           - name: node
             type: TLS
+          {{/TASKCFG_ALL_XPACK_ENABLED}}
+          {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+          - name: node
+            type: KEYSTORE
+          - name: server
+            type: KEYSTORE
+          {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
         {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
   data:
     count: {{DATA_NODE_COUNT}}
@@ -94,9 +103,9 @@ pods:
       - {{ELASTICSEARCH_JAVA_URI}}
       - {{SCHEDULER_URI}}
       - {{ELASTICSEARCH_URI}}
-      {{#TASKCFG_ALL_XPACK_ENABLED}}
-      - {{XPACK_URI}}
-      {{/TASKCFG_ALL_XPACK_ENABLED}}
+      {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+      - {{SEARCHGUARD_URI}}
+      {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
       - {{DIAGNOSTICS_URI}}
       - {{STATSD_URI}}
     rlimits:
@@ -144,20 +153,29 @@ pods:
           INGEST_ENABLED: false
           ES_JAVA_OPTS: "-Xms{{DATA_NODE_HEAP_MB}}M -Xmx{{DATA_NODE_HEAP_MB}}M"
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
+          SEARCHGUARD_VERSION: {{SEARCHGUARD_VERSION}}
           ELASTIC_STATSD_VERSION: {{ELASTIC_STATSD_VERSION}}
         configs:
           elasticsearch:
             template: elasticsearch.yml
             dest: elasticsearch-{{ELASTIC_VERSION}}/config/elasticsearch.yml
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HEALTH_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: "curl -k -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HEALTH_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP/_cat/health | grep green"
           interval: 5
           delay: 0
           timeout: 10
         {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
         transport-encryption:
+          {{#TASKCFG_ALL_XPACK_ENABLED}}
           - name: node
             type: TLS
+          {{/TASKCFG_ALL_XPACK_ENABLED}}
+          {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+          - name: node
+            type: KEYSTORE
+          - name: server
+            type: KEYSTORE
+          {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
         {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
   ingest:
     count: {{INGEST_NODE_COUNT}}
@@ -171,9 +189,9 @@ pods:
       - {{ELASTICSEARCH_JAVA_URI}}
       - {{SCHEDULER_URI}}
       - {{ELASTICSEARCH_URI}}
-      {{#TASKCFG_ALL_XPACK_ENABLED}}
-      - {{XPACK_URI}}
-      {{/TASKCFG_ALL_XPACK_ENABLED}}
+      {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+      - {{SEARCHGUARD_URI}}
+      {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
       - {{DIAGNOSTICS_URI}}
       - {{STATSD_URI}}
     rlimits:
@@ -221,20 +239,29 @@ pods:
           INGEST_ENABLED: true
           ES_JAVA_OPTS: "-Xms{{INGEST_NODE_HEAP_MB}}M -Xmx{{INGEST_NODE_HEAP_MB}}M"
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
+          SEARCHGUARD_VERSION: {{SEARCHGUARD_VERSION}}
           ELASTIC_STATSD_VERSION: {{ELASTIC_STATSD_VERSION}}
         configs:
           elasticsearch:
             template: elasticsearch.yml
             dest: elasticsearch-{{ELASTIC_VERSION}}/config/elasticsearch.yml
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HEALTH_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: "curl -k -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HEALTH_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP/_cat/health | grep green"
           interval: 5
           delay: 0
           timeout: 10
         {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
         transport-encryption:
+          {{#TASKCFG_ALL_XPACK_ENABLED}}
           - name: node
             type: TLS
+          {{/TASKCFG_ALL_XPACK_ENABLED}}
+          {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+          - name: node
+            type: KEYSTORE
+          - name: server
+            type: KEYSTORE
+          {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
         {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
   coordinator:
     count: {{COORDINATOR_NODE_COUNT}}
@@ -248,9 +275,9 @@ pods:
       - {{ELASTICSEARCH_JAVA_URI}}
       - {{SCHEDULER_URI}}
       - {{ELASTICSEARCH_URI}}
-      {{#TASKCFG_ALL_XPACK_ENABLED}}
-      - {{XPACK_URI}}
-      {{/TASKCFG_ALL_XPACK_ENABLED}}
+      {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+      - {{SEARCHGUARD_URI}}
+      {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
       - {{DIAGNOSTICS_URI}}
       - {{STATSD_URI}}
     rlimits:
@@ -298,21 +325,76 @@ pods:
           INGEST_ENABLED: false
           ES_JAVA_OPTS: "-Xms{{COORDINATOR_NODE_HEAP_MB}}M -Xmx{{COORDINATOR_NODE_HEAP_MB}}M"
           ELASTIC_VERSION: {{ELASTIC_VERSION}}
+          SEARCHGUARD_VERSION: {{SEARCHGUARD_VERSION}}
           ELASTIC_STATSD_VERSION: {{ELASTIC_STATSD_VERSION}}
         configs:
           elasticsearch:
             template: elasticsearch.yml
             dest: elasticsearch-{{ELASTIC_VERSION}}/config/elasticsearch.yml
         readiness-check:
-          cmd: "curl -k -I -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HEALTH_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP"
+          cmd: "curl -k -s -f -u {{ELASTICSEARCH_HEALTH_USER}}:{{ELASTICSEARCH_HEALTH_USER_PASSWORD}} {{ELASTICSEARCH_HEALTH_PROTOCOL}}://$TASK_NAME.$FRAMEWORK_HOST:$PORT_HTTP/_cat/health | grep green"
           interval: 5
           delay: 0
           timeout: 10
         {{#TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
         transport-encryption:
+          {{#TASKCFG_ALL_XPACK_ENABLED}}
           - name: node
             type: TLS
+          {{/TASKCFG_ALL_XPACK_ENABLED}}
+          {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+          - name: node
+            type: KEYSTORE
+          - name: server
+            type: KEYSTORE
+          {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
         {{/TASKCFG_ALL_SECURITY_TRANSPORT_ENCRYPTION_ENABLED}}
+  {{#SGADMIN_POD_ENABLED}}
+  sgadmin:
+    count: {{SGADMIN_NODE_COUNT}}
+    allow-decommission: true
+    {{#ENABLE_VIRTUAL_NETWORK}}
+    networks:
+      {{VIRTUAL_NETWORK_NAME}}:
+        labels: {{VIRTUAL_NETWORK_PLUGIN_LABELS}}
+    {{/ENABLE_VIRTUAL_NETWORK}}
+    uris:
+      - {{ELASTICSEARCH_JAVA_URI}}
+      - {{ELASTICSEARCH_URI}}
+      {{#TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+      - {{SEARCHGUARD_URI}}
+      {{/TASKCFG_ALL_SEARCHGUARD_ENABLED}}
+    placement:
+    tasks:
+      admin:
+        goal: RUNNING
+        cpus: 0.25
+        memory: 512
+        cmd: |
+          set -e
+          export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/jre/)
+          ./elasticsearch-$ELASTIC_VERSION/bin/elasticsearch-plugin install --batch file://$(ls $MESOS_SANDBOX/search-guard-6-*.zip)
+          chmod +x elasticsearch-$ELASTIC_VERSION/plugins/search-guard-6/tools/sgadmin.sh
+          rm -rf sgconfig
+          cat > sgadmin.sh <<EOF
+          export JAVA_HOME=$(ls -d $MESOS_SANDBOX/jdk*/jre/)
+          rm -rf sgconfig
+          unzip sgconfig.zip
+          openssl pkcs8 -in admin.key -topk8 -nocrypt -out admin.key.pkcs8
+          elasticsearch-$ELASTIC_VERSION/plugins/search-guard-6/tools/sgadmin.sh -icl -nhnv -key admin.key.pkcs8 -cert admin.crt -cacert admin.ca -cd sgconfig -h coordinator.${FRAMEWORK_NAME//\//}.l4lb.thisdcos.directory
+          rm admin.key.pkcs8
+          EOF
+          chmod +x sgadmin.sh
+          while [ true ] ; do
+            sleep 120
+          done
+        env:
+          ELASTIC_VERSION: {{ELASTIC_VERSION}}
+        transport-encryption:
+          - name: admin
+            type: TLS
+  {{/SGADMIN_POD_ENABLED}}
+
 plans:
   deploy:
     strategy: {{DEPLOY_STRATEGY}}
@@ -329,6 +411,11 @@ plans:
       coordinator-deploy:
         strategy: {{DEPLOY_STRATEGY}}
         pod: coordinator
+      {{#SGADMIN_POD_ENABLED}}
+      sgadmin-deploy:
+        strategy: {{DEPLOY_STRATEGY}}
+        pod: sgadmin
+      {{/SGADMIN_POD_ENABLED}}
   update:
     strategy: {{UPDATE_STRATEGY}}
     phases:
@@ -344,3 +431,8 @@ plans:
       coordinator-update:
         strategy: {{UPDATE_STRATEGY}}
         pod: coordinator
+      {{#SGADMIN_POD_ENABLED}}
+      sgadmin-update:
+        strategy: {{UPDATE_STRATEGY}}
+        pod: sgadmin
+      {{/SGADMIN_POD_ENABLED}}

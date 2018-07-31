@@ -4,11 +4,13 @@
   "mem": {{kibana.mem}},
   "instances": 1,
   "user": "{{service.user}}",
-  "cmd": "echo -e \"elasticsearch.url: $ELASTICSEARCH_URL\nelasticsearch.username: $KIBANA_USER\nelasticsearch.password: $KIBANA_PASSWORD\nserver.host: 0.0.0.0\nserver.port: $PORT_KIBANA\nserver.basePath: /service/$FRAMEWORK_NAME\" > $MESOS_SANDBOX/kibana-$ELASTIC_VERSION-linux-x86_64/config/kibana.yml && if [ \"$XPACK_ENABLED\" = true ]; then echo -e \"\nxpack.security.encryptionKey: $MESOS_FRAMEWORK_ID\nxpack.reporting.encryptionKey: $MESOS_FRAMEWORK_ID\n\" >> $MESOS_SANDBOX/kibana-$ELASTIC_VERSION-linux-x86_64/config/kibana.yml && echo 'Installing X-Pack plugin...' && $MESOS_SANDBOX/kibana-$ELASTIC_VERSION-linux-x86_64/bin/kibana-plugin install file://$MESOS_SANDBOX/x-pack-$ELASTIC_VERSION.zip; fi && if [ \"$KIBANA_ELASTICSEARCH_TLS\" = true ]; then echo -e \"\nelasticsearch.ssl.certificateAuthorities: $MESOS_SANDBOX/.ssl/ca-bundle.crt\n\" >> $MESOS_SANDBOX/kibana-$ELASTIC_VERSION-linux-x86_64/config/kibana.yml; fi && env && $MESOS_SANDBOX/kibana-$ELASTIC_VERSION-linux-x86_64/bin/kibana",
+  "cmd": "echo -e \"searchguard.basicauth.enabled: true\n$KIBANA_EXTRA_CONFIG\nelasticsearch.url: $ELASTICSEARCH_URL\nelasticsearch.username: $KIBANA_USER\nelasticsearch.password: $KIBANA_PASSWORD\nserver.host: 0.0.0.0\nserver.port: 5601\" > $MESOS_SANDBOX/kibana-$ELASTIC_VERSION-linux-x86_64/config/kibana.yml && if [ \"$XPACK_ENABLED\" = true ]; then echo -e \"\nxpack.security.encryptionKey: $MESOS_FRAMEWORK_ID\nxpack.reporting.encryptionKey: $MESOS_FRAMEWORK_ID\n\" >> $MESOS_SANDBOX/kibana-$ELASTIC_VERSION-linux-x86_64/config/kibana.yml && echo 'Installing X-Pack plugin...' && $MESOS_SANDBOX/kibana-$ELASTIC_VERSION-linux-x86_64/bin/kibana-plugin install file://$MESOS_SANDBOX/x-pack-$ELASTIC_VERSION.zip; fi && if [ \"$KIBANA_ELASTICSEARCH_TLS\" = true ]; then echo -e \"\nelasticsearch.ssl.certificateAuthorities: $MESOS_SANDBOX/.ssl/ca-bundle.crt\n\" >> $MESOS_SANDBOX/kibana-$ELASTIC_VERSION-linux-x86_64/config/kibana.yml; fi && $MESOS_SANDBOX/kibana-$ELASTIC_VERSION-linux-x86_64/bin/kibana-plugin install file://$MESOS_SANDBOX/search-guard-kibana-plugin-6.3.1-14-beta-1.zip && env && $MESOS_SANDBOX/kibana-$ELASTIC_VERSION-linux-x86_64/bin/kibana",
   "labels": {
-    "DCOS_SERVICE_NAME": "{{service.name}}",
-    "DCOS_SERVICE_PORT_INDEX": "0",
-    "DCOS_SERVICE_SCHEME": "http"
+    {{#service.marathon_lb}}
+    "HAPROXY_GROUP": "{{service.marathon_lb_group}}",
+    "HAPROXY_0_VHOST": "{{service.marathon_lb_vhost}}",
+    "HAPROXY_0_REDIRECT_TO_HTTPS": "{{service.marathon_lb_redirect_to_https}}"
+    {{/service.marathon_lb}}
   },
   "env": {
     "ELASTIC_VERSION": "{{elastic-version}}",
@@ -16,27 +18,38 @@
     "FRAMEWORK_NAME": "{{service.name}}",
     "FRAMEWORK_USER": "{{service.user}}",
     "XPACK_ENABLED": "{{kibana.xpack_enabled}}",
+    "SEARCHGUARD_ENABLED": "{{kibana.searchguard_enabled}}",
     "ELASTICSEARCH_URL": "{{kibana.elasticsearch_url}}",
     {{#kibana.elasticsearch_tls}}
     "KIBANA_ELASTICSEARCH_TLS": "{{kibana.elasticsearch_tls}}",
     {{/kibana.elasticsearch_tls}}
     "KIBANA_USER": "{{kibana.user}}",
+    "KIBANA_EXTRA_CONFIG": "{{{kibana.extra_config}}}",
     "KIBANA_PASSWORD": "{{kibana.password}}"
   },
   "fetch": [
     { "uri": "{{resource.assets.uris.kibana-tar-gz}}", "cache": true },
-    { "uri": "{{resource.assets.uris.xpack-zip}}", "extract": false, "cache": true }
+    { "uri": "{{resource.assets.uris.searchguard-zip}}", "extract": false, "cache": true }
   ],
   "upgradeStrategy":{
     "minimumHealthCapacity": 0,
     "maximumOverCapacity": 0
   },
-  "portDefinitions": [
+  "container": {
+    "type": "MESOS",
+    "portMappings": [
+      {
+        "containerPort": 5601,
+        "protocol": "tcp",
+        "name": "kibana",
+        "labels": { "VIP_0": "/web.{{service.name}}:80" }
+      }
+    ]
+  },
+  "networks": [
     {
-      "port": 0,
-      "protocol": "tcp",
-      "name": "kibana",
-      "labels": { "VIP_0": "/web.{{service.name}}:80" }
+      "name": "dcos",
+      "mode": "container"
     }
   ],
   "healthChecks": [

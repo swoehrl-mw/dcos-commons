@@ -14,7 +14,27 @@
           "description": "The user that runs the Kibana services and owns the Mesos sandbox.",
           "type": "string",
           "default": "nobody"
-        }
+        },
+        "marathon_lb": {
+         "type": "boolean",
+         "description": "Whether to enable marathon-lb config for the service, if set requires marathon_lb_vhost",
+         "default": false
+       },
+       "marathon_lb_group": {
+         "type": "string",
+         "description": "The group name for marathon-lb, used for HAPROXY_GROUP",
+         "default": "external"
+       },
+       "marathon_lb_vhost": {
+         "type": "string",
+         "description": "The domain name to use for marathon-lb, used for HAPROXY_0_VHOST",
+         "default": ""
+       },
+       "marathon_lb_redirect_to_https": {
+         "type": "boolean",
+         "description": "Enable redirect to https for marathon-lb",
+         "default": false
+       }
       },
       "required": [
         "name",
@@ -30,6 +50,16 @@
           "description": "Whether or not to enable the commercial X-Pack plugin from kibana",
           "type": "boolean",
           "default": false
+        },
+        "searchguard_enabled": {
+          "description": "Whether or not to enable the commercial X-Pack plugin from kibana",
+          "type": "boolean",
+          "default": false
+        },
+        "extra_config": {
+          "description": "Extra entries for the kibana.yml",
+          "type": "string",
+          "default": ""
         },
         "elasticsearch_url": {
           "description": "The URL of the Elasticsearch cluster to use for all your queries.",

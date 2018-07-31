@@ -19,6 +19,16 @@ if [ "$XPACK_ENABLED" = true ]; then
     fi
 fi
 
+if [ "$SEARCHGUARD_ENABLED" = true ]; then
+    PLUGIN_FILE=$(ls $MESOS_SANDBOX/search-guard-6-*.zip)
+    SEARCHGUARD_PLUGIN="file://${PLUGIN_FILE}"
+    if [ -n "$PLUGINS" ]; then
+        PLUGINS="$PLUGINS$IFS$SEARCHGUARD_PLUGIN"
+    else
+        PLUGINS="$SEARCHGUARD_PLUGIN"
+    fi
+fi
+
 if [ -n "$STATSD_UDP_HOST" ]; then
     STATSD_PLUGIN="file://$MESOS_SANDBOX/elasticsearch-statsd-$ELASTIC_STATSD_VERSION.zip"
     if [ -n "$PLUGINS" ]; then
