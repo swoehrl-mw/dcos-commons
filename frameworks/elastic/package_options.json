@@ -1,13 +1,13 @@
 {
   "name": "elastic",
-  "version": "2.4.0-6.4.2-mw1",
-  "downgrades_to": "2.1.1-5.6.5-mw1",
-  "upgrades_from": "2.1.1-5.6.5-mw1",
+  "version": "2.4.0-6.4.2-mw2",
+  "downgrades_to": "2.4.0-6.4.2-mw1",
+  "upgrades_from": "2.4.0-6.4.2-mw1",
   "artifact_url": "https://mw-universe.s3-eu-central-1.amazonaws.com/packages/elastic",
   "extra_template_parameters": {
   	"elastic-version": "6.4.2",
     "elastic-statsd-version": "6.4.2.0",
   	"support-diagnostics-version": "6.4.2",
-    "searchguard-version": "23.1"
+    "searchguard-version": "23.2"
   }
 }
